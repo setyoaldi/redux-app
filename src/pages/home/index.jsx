@@ -2,10 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+
 import Card from '../../components/card';
 import instance from '../../axios';
 import { colorContext } from '../about';
-
 
 
 const Home = () => {
@@ -17,6 +17,11 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
+		const accessToken = localStorage.getItem('access_token');
+		if (!accessToken) {
+			navigate('/login');
+		}
+
 		fetchingData();
 	}, []);
 
@@ -40,6 +45,11 @@ const Home = () => {
 		navigate('/detail/' + id);
 	};
 
+	const logout = () => {
+		localStorage.clear();
+		navigate('/login');
+	};
+
 	return (
 		<div className="App">
 			<div>
@@ -48,18 +58,22 @@ const Home = () => {
 						<h1>Loading........</h1>
 					</div>
 				) : (
-					<div className='list'>
-						{/* { JSON.stringify(newsSelector?.news) } */ }
-						{ newsSelector?.news && newsSelector?.news?.map((movie, i) => {
-							return (
-								<div onClick={ () => toDetail(movie.id) } >
-									<Card
-										key={ movie.id }
-										movie={ movie }
-									/>
-								</div>
-							);
-						}) }
+					<div>
+
+						<button onClick={ logout } >Logout</button>
+						<div className='list'>
+							{/* { JSON.stringify(newsSelector?.news) } */ }
+							{ newsSelector?.news && newsSelector?.news?.map((movie, i) => {
+								return (
+									<div onClick={ () => toDetail(movie.id) } >
+										<Card
+											key={ movie.id }
+											movie={ movie }
+										/>
+									</div>
+								);
+							}) }
+						</div>
 					</div>
 				) }
 			</div>
